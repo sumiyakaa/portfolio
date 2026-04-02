@@ -98,13 +98,12 @@
     var cards = document.querySelectorAll('.work-card');
     if (!cards.length) return;
 
-    cards.forEach(function (card, i) {
+    cards.forEach(function (card) {
       gsap.fromTo(card,
         { opacity: 0, y: 15 },
         {
           opacity: 1, y: 0,
           duration: 0.8,
-          delay: i * 0.1,
           ease: GSAP_EASE,
           scrollTrigger: {
             trigger: card,
