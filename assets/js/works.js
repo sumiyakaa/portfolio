@@ -78,7 +78,7 @@
   function initFVShrink(fv) {
     if (!fv) return;
 
-    var shrinkTl = gsap.timeline({ delay: 1.0 });
+    var shrinkTl = gsap.timeline();
 
     shrinkTl.to(fv, {
       height: '50vh',

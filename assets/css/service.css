@@ -140,7 +140,7 @@
 .service-style__title {
   font-family: var(--ff-en);
   font-weight: 200;
-  font-size: 48px;
+  font-size: 57.6px;
   letter-spacing: 0.15em;
   color: var(--c-white);
   position: sticky;
@@ -167,7 +167,7 @@
   display: block;
   font-family: var(--ff-mono);
   font-weight: 300;
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.1em;
   color: var(--c-white);
   margin-bottom: 12px;
@@ -176,7 +176,7 @@
 .service-style__name {
   font-family: var(--ff-en);
   font-weight: 400;
-  font-size: 18px;
+  font-size: 21.6px;
   letter-spacing: 0.1em;
   color: var(--c-white);
   margin-bottom: 16px;
@@ -185,7 +185,7 @@
 .service-style__text {
   font-family: var(--ff-jp);
   font-weight: 300;
-  font-size: 14px;
+  font-size: 16.8px;
   line-height: 2.0;
   color: var(--c-white);
   letter-spacing: 0.04em;
@@ -213,7 +213,7 @@
 .service-aio__title {
   font-family: var(--ff-en);
   font-weight: 200;
-  font-size: 42px;
+  font-size: 50.4px;
   letter-spacing: 0.15em;
   color: var(--c-gray-900);
   line-height: 1.4;
@@ -223,7 +223,7 @@
 .service-aio__lead {
   font-family: var(--ff-jp);
   font-weight: 500;
-  font-size: 18px;
+  font-size: 21.6px;
   color: var(--c-gray-900);
   margin-top: 32px;
   line-height: 2.0;
@@ -237,7 +237,7 @@
 .service-aio__text {
   font-family: var(--ff-jp);
   font-weight: 300;
-  font-size: 14px;
+  font-size: 16.8px;
   line-height: 2.0;
   color: #111;
   letter-spacing: 0.04em;
@@ -257,7 +257,7 @@
 .service-aio__list-item {
   font-family: var(--ff-jp);
   font-weight: 300;
-  font-size: 14px;
+  font-size: 16.8px;
   line-height: 2.0;
   color: #111;
   letter-spacing: 0.04em;
@@ -293,7 +293,7 @@
 .service-price__title {
   font-family: var(--ff-en);
   font-weight: 200;
-  font-size: 48px;
+  font-size: 57.6px;
   letter-spacing: 0.2em;
   color: var(--c-white);
   opacity: 0;
@@ -333,7 +333,7 @@
 .service-price__num {
   font-family: var(--ff-mono);
   font-weight: 300;
-  font-size: 11px;
+  font-size: 13.2px;
   letter-spacing: 0.1em;
   color: var(--c-white);
   flex-shrink: 0;
@@ -342,7 +342,7 @@
 .service-price__name {
   font-family: var(--ff-en);
   font-weight: 300;
-  font-size: 22px;
+  font-size: 26.4px;
   letter-spacing: 0.1em;
   color: var(--c-pure-white);
 }
@@ -350,7 +350,7 @@
 .service-price__amount {
   font-family: var(--ff-en);
   font-weight: 600;
-  font-size: 22px;
+  font-size: 26.4px;
   color: var(--c-pure-white);
   margin-left: auto;
   white-space: nowrap;
@@ -359,7 +359,7 @@
 .service-price__desc {
   font-family: var(--ff-jp);
   font-weight: 300;
-  font-size: 12px;
+  font-size: 14.4px;
   color: var(--c-white);
   margin-top: 8px;
   padding-left: 27px;
@@ -375,7 +375,7 @@
 .service-price__option-label {
   font-family: var(--ff-mono);
   font-weight: 300;
-  font-size: 11px;
+  font-size: 13.2px;
   letter-spacing: 0.2em;
   color: var(--c-white);
   margin-bottom: 24px;
@@ -396,7 +396,7 @@
 .service-price__option-prefix {
   font-family: var(--ff-mono);
   font-weight: 400;
-  font-size: 14px;
+  font-size: 16.8px;
   color: var(--c-white);
   margin-right: 12px;
   flex-shrink: 0;
@@ -405,7 +405,7 @@
 .service-price__option-name {
   font-family: var(--ff-jp);
   font-weight: 300;
-  font-size: 14px;
+  font-size: 16.8px;
   color: var(--c-white);
   letter-spacing: 0.02em;
 }
@@ -413,7 +413,7 @@
 .service-price__option-amount {
   font-family: var(--ff-en);
   font-weight: 400;
-  font-size: 14px;
+  font-size: 16.8px;
   color: var(--c-white);
   margin-left: auto;
   white-space: nowrap;
@@ -422,7 +422,7 @@
 .service-price__note {
   font-family: var(--ff-jp);
   font-weight: 300;
-  font-size: 12px;
+  font-size: 14.4px;
   color: var(--c-white);
   margin-top: 40px;
   letter-spacing: 0.02em;
@@ -448,7 +448,7 @@
 .service-process__title {
   font-family: var(--ff-en);
   font-weight: 200;
-  font-size: 48px;
+  font-size: 57.6px;
   letter-spacing: 0.2em;
   color: var(--c-gray-900);
   opacity: 0;
@@ -508,7 +508,7 @@
   display: block;
   font-family: var(--ff-mono);
   font-weight: 300;
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.1em;
   color: #111;
   margin-bottom: 8px;
@@ -517,7 +517,7 @@
 .service-process__name {
   font-family: var(--ff-en);
   font-weight: 400;
-  font-size: 16px;
+  font-size: 19.2px;
   letter-spacing: 0.1em;
   color: var(--c-gray-900);
   margin-bottom: 12px;
@@ -526,7 +526,7 @@
 .service-process__text {
   font-family: var(--ff-jp);
   font-weight: 300;
-  font-size: 13px;
+  font-size: 15.6px;
   color: #111;
   line-height: 2.0;
   letter-spacing: 0.04em;

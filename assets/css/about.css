@@ -134,7 +134,7 @@
 .about-story__lead {
   font-family: var(--ff-jp);
   font-weight: 500;
-  font-size: 18px;
+  font-size: 21.6px;
   line-height: 2.0;
   color: var(--c-white);
   opacity: 0;
@@ -147,7 +147,7 @@
 .about-story__paragraph {
   font-family: var(--ff-jp);
   font-weight: 300;
-  font-size: 15px;
+  font-size: 18px;
   line-height: 2.2;
   letter-spacing: 0.04em;
   color: var(--c-white);
@@ -162,7 +162,7 @@
 .about-story__highlight {
   font-family: var(--ff-en);
   font-weight: 200;
-  font-size: 24px;
+  font-size: 28.8px;
   letter-spacing: 0.1em;
   color: var(--c-pure-white);
   padding: 40px 0;
@@ -194,7 +194,7 @@
 .about-belief__heading {
   font-family: var(--ff-jp);
   font-weight: 500;
-  font-size: 24px;
+  font-size: 28.8px;
   color: var(--c-gray-900);
   line-height: 1.6;
   letter-spacing: 0.04em;
@@ -203,7 +203,7 @@
 .about-belief__text {
   font-family: var(--ff-jp);
   font-weight: 300;
-  font-size: 14px;
+  font-size: 16.8px;
   line-height: 2.0;
   color: #111;
   margin-top: 16px;
@@ -275,7 +275,7 @@
 .about-skill__num {
   font-family: var(--ff-mono);
   font-weight: 300;
-  font-size: 11px;
+  font-size: 13.2px;
   letter-spacing: 0.1em;
   color: var(--c-white);
   align-self: center;
@@ -284,7 +284,7 @@
 .about-skill__name {
   font-family: var(--ff-en);
   font-weight: 400;
-  font-size: 14px;
+  font-size: 16.9px;
   letter-spacing: 0.06em;
   color: var(--c-white);
   align-self: center;
@@ -293,7 +293,7 @@
 .about-skill__desc {
   font-family: var(--ff-jp);
   font-weight: 300;
-  font-size: 12px;
+  font-size: 14.5px;
   letter-spacing: 0.02em;
   color: var(--c-white);
   align-self: center;

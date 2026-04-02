@@ -408,13 +408,14 @@
 .works__thumb {
   display: block;
   width: 640px;
-  height: 360px;
+  height: calc(1080px / 3);
   border: 1px solid var(--c-gray-800);
   border-radius: 0;
   overflow: hidden;
   position: relative;
   transition: border-color 0.3s;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 .works__thumb:hover {
