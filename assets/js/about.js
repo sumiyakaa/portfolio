@@ -80,6 +80,7 @@
       ease: 'cubic-bezier(0.16, 1, 0.3, 1)',
       onComplete: function () {
         fv.style.height = '50vh';
+        ScrollTrigger.refresh();
       }
     });
   }
