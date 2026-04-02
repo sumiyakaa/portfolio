@@ -356,19 +356,25 @@
       typeChar();
     }
 
-    // サムネイル自動スクロール（ホバー時）
-    function startThumbScroll(thumbEl) {
-      var img = thumbEl.querySelector('img');
-      if (!img) return;
+    // サムネイル自動スクロール（ホバー時）— 各サムネイルごとにtweenを管理
+    var scrollTweens = {};
 
-      var wrapH = thumbEl.offsetHeight;
-      var imgH = img.naturalHeight * (thumbEl.offsetWidth / img.naturalWidth);
+    function startThumbScroll(thumbEl) {
+      var index = thumbEl.dataset.index;
+      var imgWrap = thumbEl.querySelector('.works__thumb-img-wrap');
+      var img = thumbEl.querySelector('img');
+      if (!img || !imgWrap) return;
+
+      var wrapH = imgWrap.offsetHeight;
+      var imgH = img.offsetHeight;
       var scrollDist = imgH - wrapH;
       if (scrollDist <= 0) return;
 
-      var duration = Math.max(3, Math.min(6, scrollDist / 200));
+      var duration = Math.min(6, Math.max(3, scrollDist / 300));
 
-      gsap.fromTo(img,
+      if (scrollTweens[index]) scrollTweens[index].kill();
+
+      scrollTweens[index] = gsap.fromTo(img,
         { y: 0 },
         {
           y: -scrollDist,
@@ -379,8 +385,15 @@
     }
 
     function stopThumbScroll(thumbEl) {
+      var index = thumbEl.dataset.index;
       var img = thumbEl.querySelector('img');
       if (!img) return;
+
+      if (scrollTweens[index]) {
+        scrollTweens[index].kill();
+        scrollTweens[index] = null;
+      }
+
       gsap.to(img, { y: 0, duration: 0.5, ease: 'power2.out' });
     }
 
