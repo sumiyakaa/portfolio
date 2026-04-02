@@ -32,6 +32,7 @@
         splash.remove();
         document.body.classList.remove('is-locked');
         sessionStorage.setItem('akashiki-splash', '1');
+        if (window.lenis) window.lenis.start();
         onComplete();
       }
     });
@@ -87,6 +88,7 @@
     var entrance = gsap.timeline({
       onComplete: function () {
         bindScroll();
+        initCornerBreathing();
       }
     });
 
@@ -262,6 +264,315 @@
       requestAnimationFrame(animate);
     }
     animate();
+  }
+
+  /* ========================================
+     B: Floating Wireframe Geometry
+     ======================================== */
+  function initWireframe() {
+    var fvSticky = document.querySelector('.fv__sticky');
+    if (!fvSticky) return;
+
+    var svgNS = 'http://www.w3.org/2000/svg';
+    var container = document.createElement('div');
+    container.className = 'fv__wireframe';
+    container.setAttribute('aria-hidden', 'true');
+
+    var svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('viewBox', '0 0 1920 1080');
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+    container.appendChild(svg);
+    fvSticky.appendChild(container);
+
+    function makeLine(x1, y1, x2, y2) {
+      var el = document.createElementNS(svgNS, 'line');
+      el.setAttribute('x1', x1); el.setAttribute('y1', y1);
+      el.setAttribute('x2', x2); el.setAttribute('y2', y2);
+      el.setAttribute('stroke', 'rgba(255,255,255,0.20)');
+      el.setAttribute('stroke-width', '1');
+      el.setAttribute('fill', 'none');
+      return el;
+    }
+
+    // 直線6本
+    var lines = [
+      makeLine(200, 150, 500, 200),
+      makeLine(1400, 100, 1700, 180),
+      makeLine(100, 700, 400, 850),
+      makeLine(1500, 650, 1800, 750),
+      makeLine(800, 50, 1100, 120),
+      makeLine(600, 900, 950, 980)
+    ];
+
+    lines.forEach(function (line, i) {
+      svg.appendChild(line);
+      var dx = (Math.random() > 0.5 ? 1 : -1) * (30 + Math.random() * 20);
+      var dy = (Math.random() > 0.5 ? 1 : -1) * (30 + Math.random() * 20);
+      var rot = (Math.random() > 0.5 ? 1 : -1) * 15;
+      var dur = 15 + Math.random() * 20;
+      gsap.to(line, {
+        x: dx, y: dy, rotation: rot,
+        duration: dur, ease: 'sine.inOut', yoyo: true, repeat: -1,
+        delay: Math.random() * 5
+      });
+    });
+
+    // 三角形2個
+    var triangles = [
+      { points: '960,200 1020,320 900,320' },
+      { points: '300,500 380,620 220,620' }
+    ];
+    triangles.forEach(function (t, i) {
+      var poly = document.createElementNS(svgNS, 'polygon');
+      poly.setAttribute('points', t.points);
+      poly.setAttribute('stroke', 'rgba(255,255,255,0.16)');
+      poly.setAttribute('stroke-width', '1');
+      poly.setAttribute('fill', 'none');
+      svg.appendChild(poly);
+
+      var dx = (Math.random() > 0.5 ? 1 : -1) * (30 + Math.random() * 20);
+      var dy = (Math.random() > 0.5 ? 1 : -1) * (30 + Math.random() * 20);
+      gsap.to(poly, {
+        rotation: 360, x: dx, y: dy,
+        transformOrigin: '50% 50%',
+        duration: 60 + i * 20, ease: 'none', repeat: -1,
+        delay: Math.random() * 5
+      });
+    });
+
+    // 円1個
+    var circle = document.createElementNS(svgNS, 'circle');
+    circle.setAttribute('cx', '1400');
+    circle.setAttribute('cy', '450');
+    circle.setAttribute('r', '40');
+    circle.setAttribute('stroke', 'rgba(255,255,255,0.14)');
+    circle.setAttribute('stroke-width', '1');
+    circle.setAttribute('fill', 'none');
+    svg.appendChild(circle);
+
+    // radius パルス
+    gsap.to(circle, {
+      attr: { r: 55 },
+      duration: 8, ease: 'sine.inOut', yoyo: true, repeat: -1,
+      delay: Math.random() * 3
+    });
+    // ドリフト
+    gsap.to(circle, {
+      x: 35, y: -25,
+      duration: 25, ease: 'sine.inOut', yoyo: true, repeat: -1,
+      delay: Math.random() * 5
+    });
+  }
+
+  /* ========================================
+     C: Mouse Proximity Text Repel
+     ======================================== */
+  function initRepel() {
+    if (window.innerWidth <= 768) return;
+
+    var letters = document.querySelectorAll('.fv__letter');
+    if (!letters.length) return;
+
+    var RADIUS = 150;
+    var MAX_FORCE = 25;
+    var mouseX = -9999;
+    var mouseY = -9999;
+    var rafId = null;
+
+    document.addEventListener('mousemove', function (e) {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    function animate() {
+      for (var i = 0; i < letters.length; i++) {
+        var rect = letters[i].getBoundingClientRect();
+        var cx = rect.left + rect.width / 2;
+        var cy = rect.top + rect.height / 2;
+
+        var dx = cx - mouseX;
+        var dy = cy - mouseY;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < RADIUS) {
+          var force = (1 - dist / RADIUS) * MAX_FORCE;
+          var angle = Math.atan2(dy, dx);
+          var tx = Math.cos(angle) * force;
+          var ty = Math.sin(angle) * force;
+          letters[i].style.transform = 'translate(' + tx + 'px,' + ty + 'px)';
+        } else {
+          letters[i].style.transform = 'translate(0,0)';
+        }
+      }
+      rafId = requestAnimationFrame(animate);
+    }
+    animate();
+
+    window.addEventListener('beforeunload', function () {
+      if (rafId) cancelAnimationFrame(rafId);
+    });
+  }
+
+  /* ========================================
+     D: Corner Frame Breathing
+     ======================================== */
+  function initCornerBreathing() {
+    var cornerLines = document.querySelectorAll('.fv__corner');
+    if (!cornerLines.length) return;
+
+    cornerLines.forEach(function (corner, i) {
+      // 入場アニメーションのopacity tweenを上書きしてから開始
+      gsap.killTweensOf(corner, 'opacity');
+      gsap.set(corner, { opacity: 0.6 });
+      gsap.to(corner, {
+        opacity: 1.0,
+        duration: 4,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: -1,
+        delay: i * 0.5
+      });
+    });
+  }
+
+  /* ========================================
+     E: Particle Dust
+     ======================================== */
+  function initParticles() {
+    var fvSticky = document.querySelector('.fv__sticky');
+    if (!fvSticky) return;
+
+    var container = document.createElement('div');
+    container.className = 'fv__particles';
+    container.setAttribute('aria-hidden', 'true');
+    fvSticky.appendChild(container);
+
+    var COUNT = 25;
+    for (var i = 0; i < COUNT; i++) {
+      var p = document.createElement('div');
+      p.className = 'fv__particle';
+      var size = 2 + Math.random() * 1.5;
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+      p.style.left = (Math.random() * 100) + '%';
+      p.style.top = (Math.random() * 100) + '%';
+
+      var initOp = 0.25 + Math.random() * 0.25;
+      p.style.opacity = initOp;
+      container.appendChild(p);
+
+      // 浮遊
+      var driftX = (Math.random() > 0.5 ? 1 : -1) * (50 + Math.random() * 150);
+      var driftY = (Math.random() > 0.5 ? 1 : -1) * (30 + Math.random() * 120);
+      gsap.to(p, {
+        x: driftX, y: driftY,
+        duration: 10 + Math.random() * 20,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: -1,
+        delay: Math.random() * 5
+      });
+
+      // opacity 変動
+      gsap.to(p, {
+        opacity: 0.15 + Math.random() * 0.25,
+        duration: 3 + Math.random() * 5,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: -1,
+        delay: Math.random() * 3
+      });
+    }
+  }
+
+  /* ========================================
+     Mouse Press Ripple (⑤)
+     ======================================== */
+  function initRipple() {
+    if (window.innerWidth <= 768) return;
+
+    var fvSticky = document.querySelector('.fv__sticky');
+    if (!fvSticky) return;
+
+    var svgNS = 'http://www.w3.org/2000/svg';
+    var container = document.createElement('div');
+    container.className = 'fv__ripple-container';
+    var svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('width', '100%');
+    svg.setAttribute('height', '100%');
+    svg.style.position = 'absolute';
+    svg.style.inset = '0';
+    container.appendChild(svg);
+    fvSticky.appendChild(container);
+
+    var ripples = [];
+    var MAX_RIPPLES = 5;
+    var intervalId = null;
+    var pressX = 0;
+    var pressY = 0;
+
+    function createRipple(x, y) {
+      if (ripples.length >= MAX_RIPPLES) {
+        var oldest = ripples.shift();
+        if (oldest.tween) oldest.tween.kill();
+        if (oldest.el.parentNode) oldest.el.parentNode.removeChild(oldest.el);
+      }
+
+      var rect = container.getBoundingClientRect();
+      var cx = x - rect.left;
+      var cy = y - rect.top;
+
+      var circle = document.createElementNS(svgNS, 'circle');
+      circle.setAttribute('cx', cx);
+      circle.setAttribute('cy', cy);
+      circle.setAttribute('r', '0');
+      circle.setAttribute('fill', 'none');
+      circle.setAttribute('stroke', '#fff');
+      circle.setAttribute('stroke-width', '1');
+      circle.setAttribute('opacity', '0.18');
+      svg.appendChild(circle);
+
+      var obj = { el: circle, tween: null };
+      obj.tween = gsap.to(circle, {
+        attr: { r: 300 },
+        opacity: 0,
+        duration: 2.5,
+        ease: 'none',
+        onComplete: function () {
+          if (circle.parentNode) circle.parentNode.removeChild(circle);
+          var idx = ripples.indexOf(obj);
+          if (idx > -1) ripples.splice(idx, 1);
+        }
+      });
+      ripples.push(obj);
+    }
+
+    function onMouseDown(e) {
+      pressX = e.clientX;
+      pressY = e.clientY;
+      createRipple(pressX, pressY);
+      intervalId = setInterval(function () {
+        createRipple(pressX, pressY);
+      }, 600);
+    }
+
+    function onMouseUp() {
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    }
+
+    function onMouseMove(e) {
+      if (intervalId) {
+        pressX = e.clientX;
+        pressY = e.clientY;
+      }
+    }
+
+    fvSticky.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mouseup', onMouseUp);
+    fvSticky.addEventListener('mousemove', onMouseMove);
   }
 
   /* ========================================
@@ -628,14 +939,177 @@
   }
 
   /* ========================================
+     ⑨ Clip-path Morphing (Works→Price boundary)
+     ======================================== */
+  function initClipPathMorph() {
+    if (window.innerWidth <= 768) return;
+
+    var priceSection = document.querySelector('.price');
+    if (!priceSection) return;
+
+    // 境界エリア（セクション上端 ±100px）
+    var hitArea = document.createElement('div');
+    hitArea.className = 'price__clip-hit';
+    hitArea.setAttribute('aria-hidden', 'true');
+    priceSection.parentNode.insertBefore(hitArea, priceSection);
+
+    hitArea.addEventListener('mouseenter', function () {
+      priceSection.classList.add('is-clip-wave');
+    });
+    hitArea.addEventListener('mouseleave', function () {
+      priceSection.classList.remove('is-clip-wave');
+    });
+  }
+
+  /* ========================================
+     ⑬ Separator Pulsation (Price section)
+     ======================================== */
+  function initSeparatorPulse() {
+    if (window.innerWidth <= 768) return;
+
+    var items = document.querySelectorAll('.price__item');
+    if (!items.length) return;
+
+    var svgNS = 'http://www.w3.org/2000/svg';
+
+    items.forEach(function (item) {
+      // border-bottom を非表示にし、SVGに置き換え
+      var svg = document.createElementNS(svgNS, 'svg');
+      svg.setAttribute('class', 'price__separator-svg');
+      svg.setAttribute('viewBox', '0 0 1100 6');
+      svg.setAttribute('preserveAspectRatio', 'none');
+      svg.setAttribute('aria-hidden', 'true');
+
+      var path = document.createElementNS(svgNS, 'path');
+      path.setAttribute('d', 'M0,3 L1100,3');
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', '#e0e0e0');
+      path.setAttribute('stroke-width', '1');
+      svg.appendChild(path);
+      item.appendChild(svg);
+
+      var tweenIn = null;
+      var tweenOut = null;
+
+      item.addEventListener('mouseenter', function () {
+        if (tweenOut) tweenOut.kill();
+        tweenIn = gsap.to(path, {
+          attr: { d: 'M0,3 Q275,9 550,-1 T1100,3' },
+          duration: 0.6,
+          ease: 'cubic-bezier(0.16, 1, 0.3, 1)'
+        });
+      });
+
+      item.addEventListener('mouseleave', function () {
+        if (tweenIn) tweenIn.kill();
+        tweenOut = gsap.to(path, {
+          attr: { d: 'M0,3 L1100,3' },
+          duration: 0.6,
+          ease: 'cubic-bezier(0.16, 1, 0.3, 1)'
+        });
+      });
+    });
+  }
+
+  /* ========================================
+     ⑭ Corner Frame Expansion (FV corners)
+     ======================================== */
+  function initCornerExpansion() {
+    if (window.innerWidth <= 768) return;
+
+    var fvSticky = document.querySelector('.fv__sticky');
+    if (!fvSticky) return;
+
+    var corners = [
+      { selector: '.fv__corner--tl', x: 40, y: 40 },
+      { selector: '.fv__corner--tr', x: 1880, y: 40 },
+      { selector: '.fv__corner--bl', x: 40, y: 1040 },
+      { selector: '.fv__corner--br', x: 1880, y: 1040 }
+    ];
+
+    // 各コーナーのhitエリアとアニメーション
+    var HIT_SIZE = 150;
+    var cornerSvg = document.querySelector('.fv__corners');
+    if (!cornerSvg) return;
+
+    corners.forEach(function (c) {
+      var polyline = document.querySelector(c.selector);
+      if (!polyline) return;
+
+      var hitDiv = document.createElement('div');
+      hitDiv.className = 'fv__corner-hit';
+      hitDiv.setAttribute('aria-hidden', 'true');
+
+      // polylineのpoints属性からhitエリアの位置を決定
+      var isLeft = c.x < 960;
+      var isTop = c.y < 540;
+      hitDiv.style.position = 'absolute';
+      hitDiv.style.width = HIT_SIZE + 'px';
+      hitDiv.style.height = HIT_SIZE + 'px';
+      hitDiv.style.zIndex = '3';
+      if (isLeft) hitDiv.style.left = '0';
+      else hitDiv.style.right = '0';
+      if (isTop) hitDiv.style.top = '0';
+      else hitDiv.style.bottom = '0';
+
+      fvSticky.appendChild(hitDiv);
+
+      // 拡張ポイントの計算
+      // 通常: 50px辺 → ホバー: 100px辺
+      var originalPoints = polyline.getAttribute('points');
+      var expandedPoints;
+
+      if (c.selector === '.fv__corner--tl') {
+        expandedPoints = '40,130 40,40 130,40';
+      } else if (c.selector === '.fv__corner--tr') {
+        expandedPoints = '1790,40 1880,40 1880,130';
+      } else if (c.selector === '.fv__corner--bl') {
+        expandedPoints = '40,950 40,1040 130,1040';
+      } else {
+        expandedPoints = '1790,1040 1880,1040 1880,950';
+      }
+
+      var tweenIn = null;
+      var tweenOut = null;
+
+      hitDiv.addEventListener('mouseenter', function () {
+        if (tweenOut) tweenOut.kill();
+        tweenIn = gsap.to(polyline, {
+          attr: { points: expandedPoints },
+          strokeDasharray: 180,
+          duration: 0.5,
+          ease: 'cubic-bezier(0.16, 1, 0.3, 1)'
+        });
+      });
+
+      hitDiv.addEventListener('mouseleave', function () {
+        if (tweenIn) tweenIn.kill();
+        tweenOut = gsap.to(polyline, {
+          attr: { points: originalPoints },
+          strokeDasharray: 80,
+          duration: 0.5,
+          ease: 'cubic-bezier(0.16, 1, 0.3, 1)'
+        });
+      });
+    });
+  }
+
+  /* ========================================
      Init
      ======================================== */
   document.addEventListener('DOMContentLoaded', function () {
     playSplash(function () {
       revealAndBind();
+      initWireframe();
+      initRepel();
+      initParticles();
       initOrbs();
+      initRipple();
       initWorks();
       initPrice();
+      initClipPathMorph();
+      initSeparatorPulse();
+      initCornerExpansion();
     });
   });
 

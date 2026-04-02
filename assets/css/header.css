@@ -13,7 +13,7 @@
   z-index: var(--z-header);
   transform: translateY(-100%);
   transition: transform 0.5s var(--ease-mechanical);
-  background: rgba(10, 10, 10, 0.85);
+  background: rgba(10, 10, 10, calc(0.7 + var(--scroll-progress, 0) * 0.15));
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--c-gray-800);

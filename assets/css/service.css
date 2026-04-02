@@ -56,6 +56,37 @@
   opacity: 0.02;
 }
 
+/* ---- ③ Neg-Pos Invert ---- */
+@media (min-width: 769px) {
+  .service-style__name {
+    transition: color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                background 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                padding 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-block;
+  }
+
+  .service-style__item:hover .service-style__name {
+    color: #0a0a0a;
+    background: #fff;
+    padding: 2px 8px;
+  }
+}
+
+/* ---- Circuit Pattern ---- */
+.service-fv__circuit {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.service-fv__circuit svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
 /* ---- Content ---- */
 .service-fv__content {
   position: relative;

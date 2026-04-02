@@ -50,3 +50,40 @@ body.is-locked {
   white-space: nowrap;
   border: 0;
 }
+
+/* ---- clip-path reveal ---- */
+[data-reveal] {
+  will-change: clip-path;
+}
+
+/* ---- prefers-reduced-motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .splash { display: none !important; }
+  .page-transition { display: none !important; }
+
+  /* index.html FV要素を即座に表示 */
+  .fv__main-text, .fv__sub, .fv__hr,
+  .fv__edge, .fv__corners {
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* グレイン・スキャンライン非表示 */
+  .fv__grain, .fv__scanline { display: none !important; }
+
+  /* 光オーブ非表示 */
+  .fv__orb { display: none !important; }
+
+  /* clip-path revealを即座に表示 */
+  [data-reveal] { clip-path: none !important; }
+
+  /* char分割アニメを即座に表示 */
+  .char { opacity: 1 !important; transform: none !important; }
+}

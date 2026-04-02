@@ -9,6 +9,190 @@
   var GSAP_EASE = 'power4.out';
 
   /* ========================================
+     ③ Neg-Pos Invert — 制作スタイル見出しホバー
+     ======================================== */
+  function initNegPosInvert() {
+    // CSS transitionで実装 — JSは不要（CSSのみ）
+  }
+
+  /* ========================================
+     ⑥ Border Scanner — ブロックホバー走査線
+     ======================================== */
+  function initBorderScanner() {
+    if (window.innerWidth <= 768) return;
+
+    var svgNS = 'http://www.w3.org/2000/svg';
+    var blocks = document.querySelectorAll('.service-style__item, .service-price__item');
+
+    blocks.forEach(function (block) {
+      block.style.position = 'relative';
+
+      var svg = document.createElementNS(svgNS, 'svg');
+      svg.setAttribute('class', 'service-border-scanner');
+      svg.setAttribute('aria-hidden', 'true');
+      svg.style.position = 'absolute';
+      svg.style.inset = '0';
+      svg.style.width = '100%';
+      svg.style.height = '100%';
+      svg.style.pointerEvents = 'none';
+      svg.style.overflow = 'visible';
+
+      var rect = document.createElementNS(svgNS, 'rect');
+      rect.setAttribute('x', '0');
+      rect.setAttribute('y', '0');
+      rect.setAttribute('width', '100%');
+      rect.setAttribute('height', '100%');
+      rect.setAttribute('fill', 'none');
+      rect.setAttribute('stroke', '#fff');
+      rect.setAttribute('stroke-width', '1');
+      rect.setAttribute('opacity', '0.15');
+
+      svg.appendChild(rect);
+      block.appendChild(svg);
+
+      var tweenIn = null;
+
+      function updateDash() {
+        var w = block.offsetWidth;
+        var h = block.offsetHeight;
+        var perimeter = 2 * (w + h);
+        rect.style.strokeDasharray = perimeter;
+        rect.style.strokeDashoffset = perimeter;
+        return perimeter;
+      }
+
+      block.addEventListener('mouseenter', function () {
+        var perimeter = updateDash();
+        if (tweenIn) tweenIn.kill();
+        tweenIn = gsap.to(rect.style, {
+          strokeDashoffset: 0,
+          duration: 1.2,
+          ease: 'none'
+        });
+      });
+
+      block.addEventListener('mouseleave', function () {
+        if (tweenIn) tweenIn.kill();
+        var perimeter = 2 * (block.offsetWidth + block.offsetHeight);
+        rect.style.strokeDashoffset = perimeter;
+      });
+    });
+  }
+
+  /* ========================================
+     ⑧ 3D Tilt — 制作スタイル各項目ホバー
+     ======================================== */
+  function initTilt() {
+    if (window.innerWidth <= 768) return;
+
+    var items = document.querySelectorAll('.service-style__item');
+    items.forEach(function (item) {
+      item.style.willChange = 'transform';
+
+      // 親にperspective設定
+      var parent = item.parentElement;
+      if (parent) parent.style.perspective = '600px';
+
+      item.addEventListener('mouseenter', function (e) {
+        var rect = item.getBoundingClientRect();
+        var cx = e.clientX - rect.left;
+        var cy = e.clientY - rect.top;
+        var halfW = rect.width / 2;
+        var halfH = rect.height / 2;
+
+        var rotY = cx < halfW ? 2 : -2;
+        var rotX = cy < halfH ? -2 : 2;
+
+        gsap.to(item, {
+          rotateX: rotX,
+          rotateY: rotY,
+          duration: 0.5,
+          ease: 'cubic-bezier(0.16, 1, 0.3, 1)'
+        });
+      });
+
+      item.addEventListener('mouseleave', function () {
+        gsap.to(item, {
+          rotateX: 0,
+          rotateY: 0,
+          duration: 0.5,
+          ease: 'cubic-bezier(0.16, 1, 0.3, 1)'
+        });
+      });
+    });
+  }
+
+  /* ========================================
+     Circuit Pattern — 回路パターン背景
+     ======================================== */
+  function initCircuitPattern() {
+    var fv = document.querySelector('.service-fv');
+    if (!fv) return;
+
+    var container = document.createElement('div');
+    container.className = 'service-fv__circuit';
+    container.setAttribute('aria-hidden', 'true');
+
+    var svgNS = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('viewBox', '0 0 1920 1080');
+    svg.setAttribute('preserveAspectRatio', 'none');
+
+    var traces = [
+      { d: 'M100,200 H300 V400 H500', nodes: [[100,200],[300,200],[300,400],[500,400]] },
+      { d: 'M800,100 V350 H1000 V500', nodes: [[800,100],[800,350],[1000,350],[1000,500]] },
+      { d: 'M1400,300 H1200 V600 H1500 V450', nodes: [[1400,300],[1200,300],[1200,600],[1500,600],[1500,450]] },
+      { d: 'M200,700 H450 V900 H700', nodes: [[200,700],[450,700],[450,900],[700,900]] },
+      { d: 'M1600,150 V400 H1800 V650', nodes: [[1600,150],[1600,400],[1800,400],[1800,650]] },
+      { d: 'M900,600 H1100 V800 H1300 V700', nodes: [[900,600],[1100,600],[1100,800],[1300,800],[1300,700]] }
+    ];
+
+    traces.forEach(function (t, i) {
+      var path = document.createElementNS(svgNS, 'path');
+      path.setAttribute('d', t.d);
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', 'rgba(255,255,255,0.15)');
+      path.setAttribute('stroke-width', '0.8');
+      path.setAttribute('stroke-dasharray', '8 20');
+      path.style.willChange = 'stroke-dashoffset';
+      svg.appendChild(path);
+
+      // データフロー: dashoffset連続変化
+      gsap.to(path, {
+        strokeDashoffset: -56,
+        duration: 4,
+        ease: 'none',
+        repeat: -1,
+        delay: i * 1
+      });
+
+      // ノード
+      t.nodes.forEach(function (n) {
+        var rect = document.createElementNS(svgNS, 'rect');
+        rect.setAttribute('x', n[0] - 2);
+        rect.setAttribute('y', n[1] - 2);
+        rect.setAttribute('width', '4');
+        rect.setAttribute('height', '4');
+        rect.setAttribute('fill', 'rgba(255,255,255,0.12)');
+        svg.appendChild(rect);
+
+        // ノードパルス
+        gsap.to(rect, {
+          opacity: 0.20,
+          duration: 3,
+          ease: 'sine.inOut',
+          yoyo: true,
+          repeat: -1
+        });
+        gsap.set(rect, { opacity: 0.10 });
+      });
+    });
+
+    container.appendChild(svg);
+    fv.appendChild(container);
+  }
+
+  /* ========================================
      FV Entrance Animation
      ======================================== */
   function initFVAnimation() {
@@ -377,11 +561,15 @@
      ======================================== */
   document.addEventListener('DOMContentLoaded', function () {
     gsap.registerPlugin(ScrollTrigger);
+    initCircuitPattern();
     initFVAnimation();
     initStyleAnimation();
     initAIOAnimation();
     initPriceAnimation();
     initProcessAnimation();
+    initNegPosInvert();
+    initBorderScanner();
+    initTilt();
   });
 
 })();

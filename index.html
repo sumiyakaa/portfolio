@@ -90,11 +90,11 @@
   <header class="header" role="banner">
     <div class="header__logo"><a href="index.html">AKASHIKI</a></div>
     <nav class="header__nav" role="navigation" aria-label="メインナビゲーション">
-      <a href="index.html" class="header__nav-link">HOME</a>
-      <a href="about.html" class="header__nav-link">ABOUT</a>
-      <a href="service.html" class="header__nav-link">SERVICE</a>
-      <a href="works.html" class="header__nav-link">WORKS</a>
-      <a href="contact.html" class="header__nav-link">CONTACT</a>
+      <a href="index.html" class="header__nav-link" data-magnetic="0.3">HOME</a>
+      <a href="about.html" class="header__nav-link" data-magnetic="0.3">ABOUT</a>
+      <a href="service.html" class="header__nav-link" data-magnetic="0.3">SERVICE</a>
+      <a href="works.html" class="header__nav-link" data-magnetic="0.3">WORKS</a>
+      <a href="contact.html" class="header__nav-link" data-magnetic="0.3">CONTACT</a>
     </nav>
     <button class="header__burger" aria-label="メニューを開く" aria-expanded="false">
       <span class="header__burger-line"></span>
@@ -162,7 +162,7 @@
     </section>
 
     <!-- ========== Works Section ========== -->
-    <section class="works" aria-label="実績紹介">
+    <section class="works" data-scroll-section aria-label="実績紹介">
       <div class="works__inner">
 
         <!-- Left: Typography Area -->
@@ -194,17 +194,17 @@
 
         <!-- Right: Thumbnails -->
         <div class="works__thumbs">
-          <a href="https://sumiyakaa.github.io/BistroAoki/" target="_blank" rel="noopener noreferrer" class="works__thumb" data-index="0" data-name="Bistro Aoki" data-genre="Restaurant" data-pages="LP">
+          <a href="https://sumiyakaa.github.io/BistroAoki/" target="_blank" rel="noopener noreferrer" class="works__thumb" data-magnetic="0.2" data-index="0" data-name="Bistro Aoki" data-genre="Restaurant" data-pages="LP">
             <div class="works__thumb-img-wrap">
               <img src="assets/img/works/bistro-aoki-thumb.webp" alt="Bistro Aoki — レストランLP制作実績" width="280" height="1200" loading="lazy" decoding="async">
             </div>
           </a>
-          <a href="https://sumiyakaa.github.io/AokiGym/" target="_blank" rel="noopener noreferrer" class="works__thumb" data-index="1" data-name="AOKI GYM" data-genre="Personal Gym" data-pages="LP">
+          <a href="https://sumiyakaa.github.io/AokiGym/" target="_blank" rel="noopener noreferrer" class="works__thumb" data-magnetic="0.2" data-index="1" data-name="AOKI GYM" data-genre="Personal Gym" data-pages="LP">
             <div class="works__thumb-img-wrap">
               <img src="assets/img/works/aoki-gym-thumb.webp" alt="AOKI GYM — パーソナルジムLP制作実績" width="280" height="1200" loading="lazy" decoding="async">
             </div>
           </a>
-          <a href="https://sumiyakaa.github.io/caldwell-sons/" target="_blank" rel="noopener noreferrer" class="works__thumb" data-index="2" data-name="J. Caldwell &amp; Sons" data-genre="Apparel" data-pages="Bilingual">
+          <a href="https://sumiyakaa.github.io/caldwell-sons/" target="_blank" rel="noopener noreferrer" class="works__thumb" data-magnetic="0.2" data-index="2" data-name="J. Caldwell &amp; Sons" data-genre="Apparel" data-pages="Bilingual">
             <div class="works__thumb-img-wrap">
               <img src="assets/img/works/caldwell-sons.webp" alt="J. Caldwell &amp; Sons — アパレル バイリンガルサイト制作実績" width="1200" height="4277" loading="lazy" decoding="async">
             </div>
@@ -215,12 +215,12 @@
 
       <!-- View All Link -->
       <div class="works__more">
-        <a href="works.html" class="works__more-link">VIEW ALL WORKS →</a>
+        <a href="works.html" class="works__more-link" data-magnetic="0.3">VIEW ALL WORKS →</a>
       </div>
     </section>
 
     <!-- ========== Price Digest Section ========== -->
-    <section class="price" aria-label="料金">
+    <section class="price" data-scroll-section data-reveal aria-label="料金">
       <div class="price__inner">
         <div class="price__head">
           <h2 class="price__title"><span class="price__title-en">PRICE —</span> <span class="price__title-jp">料金</span></h2>
@@ -249,7 +249,7 @@
         </div>
 
         <div class="price__link-wrap">
-          <a href="service.html" class="price__link">VIEW DETAILS →</a>
+          <a href="service.html" class="price__link" data-magnetic="0.3">VIEW DETAILS →</a>
         </div>
       </div>
     </section>
@@ -265,10 +265,10 @@
       </div>
       <div class="footer__right">
         <nav class="footer__nav" aria-label="フッターナビゲーション">
-          <a href="about.html" class="footer__nav-link">ABOUT</a>
-          <a href="service.html" class="footer__nav-link">SERVICE</a>
-          <a href="works.html" class="footer__nav-link">WORKS</a>
-          <a href="contact.html" class="footer__nav-link">CONTACT</a>
+          <a href="about.html" class="footer__nav-link" data-magnetic="0.3">ABOUT</a>
+          <a href="service.html" class="footer__nav-link" data-magnetic="0.3">SERVICE</a>
+          <a href="works.html" class="footer__nav-link" data-magnetic="0.3">WORKS</a>
+          <a href="contact.html" class="footer__nav-link" data-magnetic="0.3">CONTACT</a>
         </nav>
         <div class="footer__sns">
           <a href="https://x.com/sumiyakaa" target="_blank" rel="noopener noreferrer" class="footer__sns-link" aria-label="X（旧Twitter）"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
@@ -285,6 +285,7 @@
   <!-- Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lenis/1.1.18/lenis.min.js" defer></script>
   <script src="assets/js/common.js" defer></script>
   <script src="assets/js/index.js" defer></script>
 </body>

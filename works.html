@@ -78,11 +78,11 @@
   <header class="header" role="banner">
     <div class="header__logo"><a href="index.html">AKASHIKI</a></div>
     <nav class="header__nav" role="navigation" aria-label="メインナビゲーション">
-      <a href="index.html" class="header__nav-link">HOME</a>
-      <a href="about.html" class="header__nav-link">ABOUT</a>
-      <a href="service.html" class="header__nav-link">SERVICE</a>
-      <a href="works.html" class="header__nav-link">WORKS</a>
-      <a href="contact.html" class="header__nav-link">CONTACT</a>
+      <a href="index.html" class="header__nav-link" data-magnetic="0.3">HOME</a>
+      <a href="about.html" class="header__nav-link" data-magnetic="0.3">ABOUT</a>
+      <a href="service.html" class="header__nav-link" data-magnetic="0.3">SERVICE</a>
+      <a href="works.html" class="header__nav-link" data-magnetic="0.3">WORKS</a>
+      <a href="contact.html" class="header__nav-link" data-magnetic="0.3">CONTACT</a>
     </nav>
     <button class="header__burger" aria-label="メニューを開く" aria-expanded="false">
       <span class="header__burger-line"></span>
@@ -110,7 +110,9 @@
         <div class="works-fv__scanline" aria-hidden="true"></div>
       </div>
       <div class="works-fv__content">
-        <h1 class="works-fv__title">WORKS</h1>
+        <div class="works-fv__title-area">
+          <h1 class="works-fv__title">WORKS</h1>
+        </div>
         <p class="works-fv__sub">すべての制作実績</p>
         <p class="works-fv__count">18 PROJECTS</p>
         <div class="works-fv__hr" aria-hidden="true"></div>
@@ -135,7 +137,7 @@
     </section>
 
     <!-- ========== 作品一覧グリッド（黒背景） ========== -->
-    <section class="works-grid" aria-label="制作実績一覧">
+    <section class="works-grid" data-scroll-section aria-label="制作実績一覧">
       <div class="works-grid__inner">
 
         <!-- Card 01 — J. Caldwell & Sons -->
@@ -422,10 +424,10 @@
       </div>
       <div class="footer__right">
         <nav class="footer__nav" aria-label="フッターナビゲーション">
-          <a href="about.html" class="footer__nav-link">ABOUT</a>
-          <a href="service.html" class="footer__nav-link">SERVICE</a>
-          <a href="works.html" class="footer__nav-link">WORKS</a>
-          <a href="contact.html" class="footer__nav-link">CONTACT</a>
+          <a href="about.html" class="footer__nav-link" data-magnetic="0.3">ABOUT</a>
+          <a href="service.html" class="footer__nav-link" data-magnetic="0.3">SERVICE</a>
+          <a href="works.html" class="footer__nav-link" data-magnetic="0.3">WORKS</a>
+          <a href="contact.html" class="footer__nav-link" data-magnetic="0.3">CONTACT</a>
         </nav>
         <div class="footer__sns">
           <a href="https://x.com/sumiyakaaa" target="_blank" rel="noopener noreferrer" class="footer__sns-link" aria-label="X（旧Twitter）"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
@@ -442,6 +444,7 @@
   <!-- Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lenis/1.1.18/lenis.min.js" defer></script>
   <script src="assets/js/common.js" defer></script>
   <script src="assets/js/works.js" defer></script>
 </body>

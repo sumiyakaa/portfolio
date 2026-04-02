@@ -56,11 +56,50 @@
   opacity: 0.02;
 }
 
+/* ---- ① Text Split Chars ---- */
+.works-fv__char {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* ---- ⑫ Scale Breeze ---- */
+@media (min-width: 769px) {
+  .work-card {
+    transform-origin: center;
+    will-change: transform;
+  }
+}
+
+/* ---- ⑮ Dot Expansion Overlay ---- */
+.works-dot-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* ---- Dot Matrix ---- */
+.works-fv__dot-matrix {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.12) 1px, transparent 1px);
+  background-size: 30px 30px;
+  will-change: background-position;
+}
+
 /* ---- Content ---- */
 .works-fv__content {
   position: relative;
   z-index: 2;
   text-align: center;
+}
+
+.works-fv__title-area {
+  padding: 40px 60px;
+  cursor: default;
 }
 
 .works-fv__title {
@@ -174,6 +213,8 @@
 }
 
 .works-grid__inner {
+  position: relative;
+  z-index: 2;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1px;
@@ -185,6 +226,7 @@
    ======================================== */
 .work-card {
   display: block;
+  position: relative;
   background: var(--c-black);
   border: 1px solid var(--c-gray-800);
   transition: border-color 0.3s;

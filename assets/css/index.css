@@ -227,6 +227,52 @@
   stroke-dashoffset: 80;
 }
 
+/* ---- B: Wireframe Geometry ---- */
+.fv__wireframe {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.fv__wireframe svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---- C: Letter Repel ---- */
+.fv__letter {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+/* ---- E: Particle Dust ---- */
+.fv__particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.fv__particle {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  will-change: transform, opacity;
+}
+
+/* ---- Ripple Container ---- */
+.fv__ripple-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+
 /* ---- Scanline ---- */
 .fv__scanline {
   position: absolute;
@@ -585,6 +631,44 @@
   color: #000;
 }
 
+/* ---- ⑨ Clip-path Morphing Hit Area ---- */
+.price__clip-hit {
+  position: relative;
+  height: 100px;
+  margin-bottom: -100px;
+  z-index: 2;
+  pointer-events: auto;
+}
+
+.price {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  transition: clip-path 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.price.is-clip-wave {
+  clip-path: polygon(0 0, 25% 5px, 50% -3px, 75% 6px, 100% -2px, 100% 100%, 0 100%);
+}
+
+/* ---- ⑬ Separator Pulsation SVG ---- */
+.price__separator-svg {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  pointer-events: none;
+}
+
+.price__item {
+  position: relative;
+}
+
+/* ---- ⑭ Corner Expansion Hit Areas ---- */
+.fv__corner-hit {
+  pointer-events: auto;
+  cursor: default;
+}
+
 /* ========================================
    Responsive — Tablet (768–1279)
    ======================================== */
@@ -618,6 +702,8 @@
   .fv__edge--br { right: 16px; bottom: 20px; }
   .fv__orb { display: none; }
   .fv__corners { display: none; }
+  .fv__wireframe { display: none; }
+  .fv__particles { display: none; }
 
   /* Works */
   .works {

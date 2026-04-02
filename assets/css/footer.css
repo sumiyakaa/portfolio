@@ -28,7 +28,7 @@
   font-family: var(--ff-en);
   font-weight: 200;
   font-size: 36px;
-  letter-spacing: 0.2em;
+  letter-spacing: calc(0.15em + var(--scroll-progress, 0) * 0.1em);
   color: var(--c-white);
 }
 
