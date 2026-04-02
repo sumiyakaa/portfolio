@@ -309,11 +309,21 @@
 
 /* ---- Typed Area ---- */
 .works__typed {
-  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .works__typed.is-active {
-  display: block;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.works__typed-sub {
+  position: absolute;
+  left: 0;
 }
 
 .works__typed-name {

@@ -366,7 +366,16 @@
       if (!img || !imgWrap) return;
 
       var wrapH = imgWrap.offsetHeight;
+      var renderW = imgWrap.offsetWidth;
+
+      // offsetHeightが0の場合（lazy load未完了）、HTML属性から計算
       var imgH = img.offsetHeight;
+      if (imgH <= 0) {
+        var natW = img.naturalWidth || parseInt(img.getAttribute('width')) || renderW;
+        var natH = img.naturalHeight || parseInt(img.getAttribute('height')) || 0;
+        imgH = natW > 0 ? natH * (renderW / natW) : 0;
+      }
+
       var scrollDist = imgH - wrapH;
       if (scrollDist <= 0) return;
 
@@ -412,9 +421,9 @@
       resetHover();
       activeIndex = index;
 
-      // SELECTED → タイピング切り替え
-      if (selected) selected.style.display = 'none';
+      // SELECTED → タイピング切り替え（opacityのみ、display変更なし）
       if (pulseTween) pulseTween.pause();
+      if (selected) gsap.set(selected, { opacity: 0 });
       if (typed) typed.classList.add('is-active');
 
       // リーダーライン
@@ -484,10 +493,16 @@
       }
       if (typed) typed.classList.remove('is-active');
 
-      // SELECTED復帰
+      // SELECTED復帰 — ふわっとフェードイン
       if (selected) {
-        selected.style.display = '';
-        if (pulseTween) pulseTween.play();
+        gsap.to(selected, {
+          opacity: 0.70,
+          duration: 0.6,
+          ease: 'power2.out',
+          onComplete: function () {
+            if (pulseTween) pulseTween.restart();
+          }
+        });
       }
 
       // ラインリセット
