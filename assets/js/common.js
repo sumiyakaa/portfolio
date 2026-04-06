@@ -199,15 +199,23 @@
      ======================================== */
   function splitTextToChars(selector) {
     document.querySelectorAll(selector).forEach(function (el) {
-      var text = el.textContent;
+      var ariaLabel = el.textContent;
+      var nodes = Array.from(el.childNodes);
       el.innerHTML = '';
-      el.setAttribute('aria-label', text);
-      text.split('').forEach(function (char) {
-        var span = document.createElement('span');
-        span.textContent = char === ' ' ? '\u00A0' : char;
-        span.style.display = 'inline-block';
-        span.classList.add('char');
-        el.appendChild(span);
+      el.setAttribute('aria-label', ariaLabel);
+      nodes.forEach(function (node) {
+        if (node.nodeType === 1 && node.tagName === 'BR') {
+          el.appendChild(document.createElement('br'));
+          return;
+        }
+        var text = node.textContent;
+        text.split('').forEach(function (char) {
+          var span = document.createElement('span');
+          span.textContent = char === ' ' ? '\u00A0' : char;
+          span.style.display = 'inline-block';
+          span.classList.add('char');
+          el.appendChild(span);
+        });
       });
     });
   }

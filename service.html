@@ -175,7 +175,7 @@
     <section class="service-style" data-scroll-section aria-label="制作スタイル">
       <div class="service-style__inner">
         <div class="service-style__left">
-          <h2 class="service-style__title" data-char-anim>HOW I WORK</h2>
+          <h2 class="service-style__title" data-char-anim>HOW<br>I<br>WORK</h2>
         </div>
         <div class="service-style__right">
 
@@ -211,19 +211,46 @@
     </section>
 
     <!-- ========== AIO説明（白背景） ========== -->
-    <section class="service-aio" data-scroll-section data-reveal aria-label="AI検索最適化">
+    <section class="service-aio" id="aio" data-scroll-section data-reveal aria-label="AI検索最適化">
       <div class="service-aio__inner">
         <h2 class="service-aio__title" data-char-anim>AI SEARCH OPTIMIZATION</h2>
-        <p class="service-aio__lead">AI検索に対応した設計を、標準で組み込んでいます。</p>
+
+        <!-- 問題提起 -->
+        <p class="service-aio__lead"><mark class="marker">検索の7割が、サイトを訪問せずに完結する時代。</mark></p>
+        <p class="service-aio__text">Google検索の約69%がゼロクリックで終了。AI Overviewsが表示されるクエリでは、検索1位のクリック率が34.5%低下しています。</p>
+
+        <!-- 数字で裏付け -->
+        <div class="service-aio__stats">
+          <div class="service-aio__stat">
+            <span class="service-aio__stat-num">4,200<span class="service-aio__stat-unit">%+</span></span>
+            <span class="service-aio__stat-label">AI検索セッション増加率<br><small>2024年4月起点</small></span>
+          </div>
+          <div class="service-aio__stat">
+            <span class="service-aio__stat-num">8<span class="service-aio__stat-unit">億人</span></span>
+            <span class="service-aio__stat-label">ChatGPT 週間アクティブユーザー<br><small>2025年4月時点</small></span>
+          </div>
+          <div class="service-aio__stat">
+            <span class="service-aio__stat-num">3,175<span class="service-aio__stat-unit">万人</span></span>
+            <span class="service-aio__stat-label">国内AI利用者数予測<br><small>2026年末 / ICT総研</small></span>
+          </div>
+        </div>
+
+        <!-- 転換 -->
         <div class="service-aio__body">
-          <p class="service-aio__text">Google検索だけでなく、ChatGPTやPerplexity、Claude等のAIアシスタントが情報を探す時代に入っています。AIが正確にサイトの情報を読み取り、検索者に推薦できるよう、構造化データ（JSON-LD）、セマンティックHTML、FAQ Schema、エンティティ定義を全ページに実装します。</p>
-          <p class="service-aio__text">具体的には：</p>
+          <p class="service-aio__text"><mark class="marker">SEOだけでは、もう届かない。</mark></p>
+          <p class="service-aio__text">従来のSEO対策で検索1位を取っても、AIが回答を直接生成するため、サイトへの流入が激減する構造に変わりつつあります。これからは「AIに引用される側」に立つ必要があります。</p>
+
+          <!-- 解決策 -->
+          <p class="service-aio__lead"><mark class="marker">AI検索に対応した設計を、標準で組み込んでいます。</mark></p>
           <ul class="service-aio__list">
-            <li class="service-aio__list-item">JSON-LD で「この会社/この人は何者で、何ができるか」を機械が読める形で定義</li>
-            <li class="service-aio__list-item">各ページに検索者の意図に直接答えるQ&A構造を設計</li>
-            <li class="service-aio__list-item">ページ間の相互参照（内部リンク）を明示的に設計し、サイト全体の情報構造を最適化</li>
+            <li class="service-aio__list-item"><strong>構造化データ（JSON-LD）</strong> — AIが「何者で、何ができるか」を正確に読み取れる形で定義</li>
+            <li class="service-aio__list-item"><strong>セマンティックHTML</strong> — 文脈ごとにAIへ伝わるマークアップ設計</li>
+            <li class="service-aio__list-item"><strong>FAQ Schema</strong> — 検索者の意図に直接答えるQ&amp;A構造を各ページに設計</li>
+            <li class="service-aio__list-item"><strong>llms.txt</strong> — AIクローラーがサイト情報を効率的に読み取るための新標準に対応</li>
           </ul>
-          <p class="service-aio__text">従来のSEOに加え、AIウェブサーチへの最適化を標準装備。まだ対応しているWeb制作者が少ない今こそ、差別化の武器になります。</p>
+
+          <!-- 締め -->
+          <p class="service-aio__text"><mark class="marker">まだ対応しているWeb制作者が少ない今こそ、差別化の武器になります。</mark></p>
         </div>
       </div>
     </section>

@@ -557,6 +557,62 @@
   }
 
   /* ========================================
+     Marker Highlight — スクロール発火マーカー
+     ======================================== */
+  function initMarkerHighlight() {
+    var markers = document.querySelectorAll('.marker');
+    if (!markers.length) return;
+
+    markers.forEach(function (marker, i) {
+      ScrollTrigger.create({
+        trigger: marker,
+        start: 'top 85%',
+        once: true,
+        onEnter: function () {
+          gsap.delayedCall(i * 0.3, function () {
+            marker.classList.add('is-visible');
+          });
+        }
+      });
+    });
+
+    // Stats fade-up stagger
+    var stats = document.querySelectorAll('.service-aio__stat');
+    if (stats.length) {
+      gsap.fromTo(stats,
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1, y: 0, duration: 1.0, stagger: 0.2,
+          ease: 'cubic-bezier(0.16, 1, 0.3, 1)',
+          scrollTrigger: { trigger: '.service-aio__stats', start: 'top 70%' }
+        }
+      );
+    }
+  }
+
+  /* ========================================
+     Hash Scroll — FV縮小後にアンカーへスクロール
+     ======================================== */
+  function initHashScroll() {
+    if (window.location.hash !== '#aio') return;
+    window.scrollTo(0, 0);
+    var fv = document.querySelector('.service-fv');
+    var target = document.getElementById('aio');
+    if (!fv || !target) return;
+    var check = setInterval(function () {
+      if (fv.offsetHeight <= window.innerHeight * 0.55) {
+        clearInterval(check);
+        setTimeout(function () {
+          var rect = target.getBoundingClientRect();
+          var scrollY = window.pageYOffset + rect.top - 40;
+          window.scrollTo({ top: scrollY, behavior: 'smooth' });
+        }, 300);
+      }
+    }, 100);
+    setTimeout(function () { clearInterval(check); }, 8000);
+  }
+
+  /* ========================================
      Init
      ======================================== */
   document.addEventListener('DOMContentLoaded', function () {
@@ -570,6 +626,8 @@
     initNegPosInvert();
     initBorderScanner();
     initTilt();
+    initMarkerHighlight();
+    initHashScroll();
   });
 
 })();

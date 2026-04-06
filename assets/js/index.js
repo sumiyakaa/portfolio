@@ -1101,6 +1101,8 @@
     var mainText = document.querySelector('.fv__main-text');
     var letters  = document.querySelectorAll('.fv__letter');
     var sub      = document.querySelector('.fv__sub');
+    var aio      = document.querySelector('.fv__aio');
+    var aioLink  = document.querySelector('.fv__aio-link');
     var hr       = document.querySelector('.fv__hr');
     var edgeBl   = document.querySelector('.fv__edge--bl');
     var edgeBr   = document.querySelector('.fv__edge--br');
@@ -1108,7 +1110,7 @@
     var cornerLines = document.querySelectorAll('.fv__corner');
 
     // Step 1: gsap.set — visibility:visible + opacity:0
-    var allElements = [mainText, sub, hr, edgeBl, edgeBr, corners];
+    var allElements = [mainText, sub, aio, aioLink, hr, edgeBl, edgeBr, corners];
     allElements.forEach(function (el) {
       if (el) gsap.set(el, { visibility: 'visible', opacity: 0 });
     });
@@ -1147,6 +1149,20 @@
       0.3
     );
 
+    // AIO tagline
+    entrance.fromTo(aio,
+      { opacity: 0, y: 10 },
+      { opacity: 1, y: 0, duration: 1.0, ease: EASE_MECH },
+      0.5
+    );
+
+    // AIO link
+    entrance.fromTo(aioLink,
+      { opacity: 0, y: 8 },
+      { opacity: 1, y: 0, duration: 0.8, ease: EASE_MECH },
+      0.65
+    );
+
     // Horizontal rule
     entrance.fromTo(hr,
       { opacity: 0, scaleX: 0 },
@@ -1183,6 +1199,8 @@
     var container  = document.querySelector('.fv__container');
     var mainText   = document.querySelector('.fv__main-text');
     var sub        = document.querySelector('.fv__sub');
+    var aio        = document.querySelector('.fv__aio');
+    var aioLink    = document.querySelector('.fv__aio-link');
     var hr         = document.querySelector('.fv__hr');
     var edgeBl     = document.querySelector('.fv__edge--bl');
     var edgeBr     = document.querySelector('.fv__edge--br');
@@ -1242,8 +1260,38 @@
       }
     );
 
+    // AIO — subと同じ視差
+    gsap.fromTo(aio,
+      { y: 0 },
+      {
+        y: -90,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: scrollArea,
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 0.5
+        }
+      }
+    );
+
+    // AIO Link — aioと同じ視差
+    gsap.fromTo(aioLink,
+      { y: 0 },
+      {
+        y: -85,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: scrollArea,
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 0.5
+        }
+      }
+    );
+
     // Fade out — sticky後半で消える
-    var fvFadeElements = [mainText, sub, hr, edgeBl, edgeBr, corners].filter(Boolean);
+    var fvFadeElements = [mainText, sub, aio, aioLink, hr, edgeBl, edgeBr, corners].filter(Boolean);
     gsap.fromTo(fvFadeElements,
       { opacity: 1 },
       {
@@ -1733,6 +1781,8 @@
   }
 
   function initLogoTransfer() {
+    if (window.innerWidth <= 768) return;
+
     var logoFloat = document.getElementById('logoFloating');
     var selected = document.querySelector('.works__selected');
     var worksSection = document.querySelector('.works');
@@ -2132,6 +2182,33 @@
   }
 
   /* ========================================
+     Wave Lift — data-wave-lift 自動初期化
+     ======================================== */
+  function initWaveLift() {
+    document.querySelectorAll('[data-wave-lift]').forEach(function (el) {
+      var text = el.textContent;
+      el.textContent = '';
+      for (var i = 0; i < text.length; i++) {
+        var span = document.createElement('span');
+        span.textContent = text[i] === ' ' ? '\u00A0' : text[i];
+        span.style.display = 'inline-block';
+        span.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+        span.style.transitionDelay = (i * 0.03) + 's';
+        el.appendChild(span);
+      }
+      var parent = el.closest('.price__title, .price__item-left');
+      if (!parent) parent = el;
+      parent.style.cursor = 'default';
+      parent.addEventListener('mouseenter', function () {
+        el.querySelectorAll('span').forEach(function (s) { s.style.transform = 'translateY(-4px)'; });
+      });
+      parent.addEventListener('mouseleave', function () {
+        el.querySelectorAll('span').forEach(function (s) { s.style.transform = 'translateY(0)'; });
+      });
+    });
+  }
+
+  /* ========================================
      Price Section — Scroll Animations
      ======================================== */
   function initPrice() {
@@ -2377,6 +2454,7 @@
       initOrbs();
       initRipple();
       initWorks();
+      initWaveLift();
       initPrice();
       initClipPathMorph();
       initSeparatorPulse();
@@ -2416,6 +2494,7 @@
         initOrbs();
         initRipple();
         initWorks();
+        initWaveLift();
         initPrice();
         initClipPathMorph();
         initSeparatorPulse();
@@ -2437,6 +2516,7 @@
         initOrbs();
         initRipple();
         initWorks();
+        initWaveLift();
         initPrice();
         initClipPathMorph();
         initSeparatorPulse();
