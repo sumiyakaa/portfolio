@@ -443,8 +443,14 @@
     var scene = new THREE.Scene();
     // 背景なし（alpha透過で墨キャンバスが見える）
 
-    var camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 100);
-    camera.position.set(0, 0.3, 10);
+    var frustumSize = 8;
+    var aspect = W / H;
+    var camera = new THREE.OrthographicCamera(
+      frustumSize * aspect / -2, frustumSize * aspect / 2,
+      frustumSize / 2, frustumSize / -2,
+      0.1, 100
+    );
+    camera.position.set(0, 0.3, 15);
     camera.lookAt(0, 0, 0);
 
     var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
@@ -453,21 +459,49 @@
     renderer.setClearColor(0x000000, 0);
     renderer.outputEncoding = THREE.sRGBEncoding;
 
-    // 静寂の光 — アンビエント（空間全体をじょじょに満たす）
-    var ambientLight = new THREE.AmbientLight(0xffffff, 0.008);
-    scene.add(ambientLight);
+    // 環境光（暖色系で暗め）
+    var ambLight = new THREE.AmbientLight(0x100800, 0.008);
+    scene.add(ambLight);
 
-    // 控えめなディレクショナルライト（斜め上前方、全文字出揃い後にフェードイン）
-    var dirLight = new THREE.DirectionalLight(0xffffff, 0);
-    dirLight.position.set(0.3, 1.0, 0.8);
-    scene.add(dirLight);
+    // メインライト（上方やや後ろ → チルト後の正面に垂直、側面だけ照らす）
+    var topLight = new THREE.DirectionalLight(0xffffff, 0);
+    topLight.position.set(0, 10, -3);
+    scene.add(topLight);
+
+    // リムライト（後方上 → 文字上端エッジを暖色で光らせる）
+    var rimLight = new THREE.DirectionalLight(0xffcc88, 0);
+    rimLight.position.set(0, 4, -8);
+    scene.add(rimLight);
+
+    // 下方からの暖色光（底面の橙色を引き立てる）
+    var fillLight = new THREE.DirectionalLight(0x884422, 0);
+    fillLight.position.set(0, -8, 0.5);
+    scene.add(fillLight);
+
+    // 正面からの暖白色光（面の視認性確保用）
+    var frontLight = new THREE.DirectionalLight(0xffeedd, 0);
+    frontLight.position.set(0, 0, 10);
+    scene.add(frontLight);
+
+    // 上面ライト（真上やや奥から → チルト後の上面のみ照射）
+    var topSurfLight = new THREE.DirectionalLight(0xffffff, 0);
+    topSurfLight.position.set(0, 10, -2);
+    scene.add(topSurfLight);
+
+    // 環境マップは不使用（正面の余計な反射を防ぐ）
+    var envMap = null;
 
     return {
       scene: scene,
       camera: camera,
       renderer: renderer,
-      ambientLight: ambientLight,
-      dirLight: dirLight,
+      envMap: envMap,
+      ambLight: ambLight,
+      topLight: topLight,
+      rimLight: rimLight,
+      fillLight: fillLight,
+      frontLight: frontLight,
+      topSurfLight: topSurfLight,
       render: function () { renderer.render(scene, camera); },
       destroy: function () {
         renderer.dispose();
@@ -481,44 +515,164 @@
   /* ========================================
      Per-character 3D Text
      ======================================== */
-  function createLanternText(scene, camera, onReady) {
+  function createLanternText(scene, camera, envMap, onReady) {
     var loader = new THREE.FontLoader();
-    var textMat = new THREE.MeshStandardMaterial({
+    // EN/JP共通: 頂点カラーで塗り分けるマテリアル
+    var vertexColorMat = new THREE.MeshStandardMaterial({
       color: 0xffffff,
-      metalness: 0.05,
-      roughness: 0.8
+      vertexColors: true,
+      metalness: 0.15,
+      roughness: 0.40
     });
 
+    // 法線Z成分で正面/側面を塗り分け + 正面にYグラデーション
+    function applyNormalColors(geometry, faceHex, sideHex) {
+      var normals = geometry.attributes.normal;
+      var positions = geometry.attributes.position;
+      var colors = new Float32Array(positions.count * 3);
+      var faceCol = new THREE.Color(faceHex);
+      var sideCol = new THREE.Color(sideHex);
+      var tmp = new THREE.Color();
+      for (var i = 0; i < positions.count; i++) {
+        var nz = Math.abs(normals.getZ(i));
+        var t = Math.pow(nz, 6);
+        tmp.copy(sideCol).lerp(faceCol, t);
+        colors[i * 3] = tmp.r;
+        colors[i * 3 + 1] = tmp.g;
+        colors[i * 3 + 2] = tmp.b;
+      }
+      geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    }
+
+    // 正面はYグラデーション、側面は暗色（W-ENGINE風）
+    function applyGradientFaceDarkSides(geometry, topHex, bottomHex, sideHex) {
+      geometry.computeBoundingBox();
+      var minY = geometry.boundingBox.min.y;
+      var maxY = geometry.boundingBox.max.y;
+      var range = maxY - minY || 1;
+      var normals = geometry.attributes.normal;
+      var positions = geometry.attributes.position;
+      var colors = new Float32Array(positions.count * 3);
+      var topCol = new THREE.Color(topHex);
+      var botCol = new THREE.Color(bottomHex);
+      var sideCol = new THREE.Color(sideHex);
+      var tmp = new THREE.Color();
+      var faceCol = new THREE.Color();
+      for (var i = 0; i < positions.count; i++) {
+        var nz = Math.abs(normals.getZ(i));
+        var t = Math.pow(nz, 4);
+        var yT = (positions.getY(i) - minY) / range;
+        faceCol.copy(botCol).lerp(topCol, yT);
+        tmp.copy(sideCol).lerp(faceCol, t);
+        colors[i * 3] = tmp.r;
+        colors[i * 3 + 1] = tmp.g;
+        colors[i * 3 + 2] = tmp.b;
+      }
+      geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    }
+
+    // 異常三角形除去（面積ゼロ・法線反転をインデックスから削除）
+    function removeDegenTriangles(geometry) {
+      var pos = geometry.attributes.position;
+      var idx = geometry.index;
+      if (!idx) return;
+      var arr = idx.array;
+      var keep = [];
+      var a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
+      var ab = new THREE.Vector3(), ac = new THREE.Vector3(), cross = new THREE.Vector3();
+      for (var i = 0; i < arr.length; i += 3) {
+        a.fromBufferAttribute(pos, arr[i]);
+        b.fromBufferAttribute(pos, arr[i + 1]);
+        c.fromBufferAttribute(pos, arr[i + 2]);
+        ab.subVectors(b, a);
+        ac.subVectors(c, a);
+        cross.crossVectors(ab, ac);
+        var area = cross.length() * 0.5;
+        // 面積が極小の退化三角形を除外
+        if (area > 1e-6) {
+          keep.push(arr[i], arr[i + 1], arr[i + 2]);
+        }
+      }
+      geometry.setIndex(keep);
+    }
+
+    // Y方向グラデーション（灯敷用）
+    function applyGradientColors(geometry, topHex, bottomHex) {
+      geometry.computeBoundingBox();
+      var minY = geometry.boundingBox.min.y;
+      var maxY = geometry.boundingBox.max.y;
+      var range = maxY - minY || 1;
+      var positions = geometry.attributes.position;
+      var colors = new Float32Array(positions.count * 3);
+      var top = new THREE.Color(topHex);
+      var bot = new THREE.Color(bottomHex);
+      var tmp = new THREE.Color();
+      for (var i = 0; i < positions.count; i++) {
+        var t = (positions.getY(i) - minY) / range;
+        tmp.copy(bot).lerp(top, t);
+        colors[i * 3] = tmp.r;
+        colors[i * 3 + 1] = tmp.g;
+        colors[i * 3 + 2] = tmp.b;
+      }
+      geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    }
+
+    // 英字用(Anton) と 漢字用(遊子朱句) の2フォントを読み込み
+    var antonFont = null;
+    var yujisyukuFont = null;
+    var fontsLoaded = 0;
+
+    function onFontLoaded() {
+      fontsLoaded++;
+      if (fontsLoaded < 2) return;
+      buildText(antonFont, yujisyukuFont);
+    }
+
+    function onFontError() {
+      if (onReady) onReady('font-error', null);
+    }
+
+    loader.load('assets/fonts/anton-regular.json', function (font) {
+      antonFont = font;
+      onFontLoaded();
+    }, undefined, onFontError);
+
     loader.load('assets/fonts/yujisyuku-regular-subset.json', function (font) {
+      yujisyukuFont = font;
+      onFontLoaded();
+    }, undefined, onFontError);
+
+    function buildText(antonFont, yujisyukuFont) {
       try {
         var CHARS = ['A', 'K', 'A', 'S', 'H', 'I', 'K', 'I', '\u2014', '\u706F', '\u6577'];
 
         var enOpts = {
-          font: font,
-          size: 0.85,
-          height: 0.18,
-          curveSegments: 24,
+          font: antonFont,
+          size: 1.331,
+          height: 1.037,
+          curveSegments: 16,
           bevelEnabled: true,
-          bevelThickness: 0.008,
-          bevelSize: 0.005,
-          bevelSegments: 3
+          bevelThickness: 0.001,
+          bevelSize: 0.02,
+          bevelSegments: 1
         };
+        var EN_STRETCH_X = 1.3;
 
         var jpOpts = {
-          font: font,
-          size: 0.75,
-          height: 0.2,
+          font: yujisyukuFont,
+          size: 0.778,
+          height: 0.45,
           curveSegments: 12,
           bevelEnabled: true,
-          bevelThickness: 0.012,
-          bevelSize: 0.008,
-          bevelSegments: 3
+          bevelThickness: 0.005,
+          bevelSize: 0.003,
+          bevelSegments: 1
         };
 
         var jpOptsFallback = {
-          font: font,
-          size: 0.75,
-          height: 0.2,
+          font: yujisyukuFont,
+          size: 0.864,
+          height: 0.691,
           curveSegments: 8,
           bevelEnabled: false
         };
@@ -527,8 +681,8 @@
         var charMeshes = [];
         var charWidths = [];
         var LETTER_SPACING = 0.08;
-        var DASH_SPACING = 0.35;
-        var JP_SPACING = 0.5;
+        var DASH_SPACING = 0.15;
+        var JP_SPACING = 0.15;
 
         // 各文字のジオメトリを生成
         for (var ci = 0; ci < CHARS.length; ci++) {
@@ -539,29 +693,45 @@
           var w = 0;
 
           if (isJP) {
-            // 漢字: ベベル付きで試行 → 失敗時ベベルなし
+            // 漢字: Y方向グラデーション
             try {
               var jpGeom = new THREE.TextGeometry(ch, jpOpts);
               jpGeom.computeBoundingBox();
-              mesh = new THREE.Mesh(jpGeom, textMat);
+              applyGradientColors(jpGeom, 0xfcff38, 0xf77123);
+              mesh = new THREE.Mesh(jpGeom, vertexColorMat);
               w = jpGeom.boundingBox.max.x - jpGeom.boundingBox.min.x;
             } catch (e) {
-              console.warn('Kanji bevel failed for "' + ch + '", retrying without bevel:', e);
+              console.warn('Kanji failed, retrying fallback:', e);
               try {
                 var jpGeom2 = new THREE.TextGeometry(ch, jpOptsFallback);
                 jpGeom2.computeBoundingBox();
-                mesh = new THREE.Mesh(jpGeom2, textMat);
+                applyGradientColors(jpGeom2, 0xfcff38, 0xf77123);
+                mesh = new THREE.Mesh(jpGeom2, vertexColorMat);
                 w = jpGeom2.boundingBox.max.x - jpGeom2.boundingBox.min.x;
               } catch (e2) {
                 console.warn('Kanji TextGeometry failed for "' + ch + '":', e2);
               }
             }
           } else {
-            // 英字 / ダッシュ
+            // 英字 / ダッシュ: 正面・側面ともにダークグレー/黒
             var geom = new THREE.TextGeometry(ch, enOpts);
+            if (ch === 'S') {
+              removeDegenTriangles(geom);
+              // S: 4%拡大 + 縦方向に2px相当伸ばし
+              geom.scale(1.04, 1.06, 1.04);
+            }
+            // 横方向に引き延ばし
+            geom.scale(EN_STRETCH_X, 1, 1);
             geom.computeBoundingBox();
-            mesh = new THREE.Mesh(geom, textMat);
+            applyNormalColors(geom, 0x3a3a3e, 0x08080a);
+            mesh = new THREE.Mesh(geom, vertexColorMat);
             w = geom.boundingBox.max.x - geom.boundingBox.min.x;
+            // ダッシュをジオメトリレベルで縮小
+            if (isDash) {
+              geom.scale(0.25, 1, 1);
+              geom.computeBoundingBox();
+              w = geom.boundingBox.max.x - geom.boundingBox.min.x;
+            }
           }
 
           if (mesh) {
@@ -592,6 +762,10 @@
             // 漢字は少しY位置を調整
             if (li >= 9) {
               charMeshes[li].position.y = 0.05;
+            }
+            // S（index=3）: 左に3px相当ずらし
+            if (li === 3) {
+              charMeshes[li].position.x = cursor - 0.03;
             }
           }
           charLocalXCenters.push(cursor + charWidths[li] / 2);
@@ -631,9 +805,7 @@
         console.error('TextGeometry creation failed:', e);
         if (onReady) onReady('font-error', null);
       }
-    }, undefined, function () {
-      if (onReady) onReady('font-error', null);
-    });
+    }
   }
 
   /* ========================================
@@ -667,10 +839,14 @@
     var rafId = null;
     var inkRafId = null;
 
-    // GSAP用プロキシ — 静寂の光
+    // GSAP用プロキシ — 5灯ライティング
     var lightState = {
-      ambient: 0.008,    // アンビエント強度
-      dirIntensity: 0    // ディレクショナル強度
+      ambient: 0.008,
+      topIntensity: 0,
+      rimIntensity: 0,
+      fillIntensity: 0,
+      frontIntensity: 0,
+      topSurfIntensity: 0
     };
 
     // 墨シミュレーション用ループ
@@ -691,7 +867,7 @@
     }
 
     // 3Dテキスト生成 → 完了後にアニメーション開始
-    createLanternText(three.scene, three.camera, function (err, result) {
+    createLanternText(three.scene, three.camera, three.envMap, function (err, result) {
       if (err) {
         if (inkRafId) cancelAnimationFrame(inkRafId);
         if (ink) ink.destroy();
@@ -704,12 +880,13 @@
       var charPositions = result.charPositions;
 
       // カメラ・テキスト状態のプロキシ
+      var TILT_X = THREE.MathUtils.degToRad(-18);
       var camState = {
-        x: 0, y: 0.3, z: 10,
+        x: 0, y: 0.3, z: 15,
         lookX: 0, lookY: 0, lookZ: 0
       };
       var textState = {
-        rotY: 0, rotX: 0, rotZ: 0,
+        rotY: 0, rotX: TILT_X, rotZ: 0,
         scale: 1,
         posX: textGroup.position.x,
         posY: textGroup.position.y,
@@ -717,9 +894,13 @@
       };
 
       function renderLoop() {
-        // 静寂の光 — 同期
-        three.ambientLight.intensity = lightState.ambient;
-        three.dirLight.intensity = lightState.dirIntensity;
+        // 5灯ライティング同期
+        three.ambLight.intensity = lightState.ambient;
+        three.topLight.intensity = lightState.topIntensity;
+        three.rimLight.intensity = lightState.rimIntensity;
+        three.fillLight.intensity = lightState.fillIntensity;
+        three.frontLight.intensity = lightState.frontIntensity;
+        three.topSurfLight.intensity = lightState.topSurfIntensity;
         // カメラ同期
         three.camera.position.set(camState.x, camState.y, camState.z);
         three.camera.lookAt(camState.lookX, camState.lookY, camState.lookZ);
@@ -771,19 +952,27 @@
         }, [], t);
       });
 
-      // 文字が出現するたびにアンビエントが少しずつ満ちる
+      // 文字が出現するたびにシルエットが浮かぶ
       var CHAR_TOTAL = charMeshes.length * CHAR_DELAY;
       master.to(lightState, {
-        ambient: 0.12,
+        ambient: 0.06,
+        topIntensity: 0.5,
+        fillIntensity: 0.1,
+        frontIntensity: 0.04,
+        topSurfIntensity: 0.3,
         duration: CHAR_TOTAL,
         ease: 'power1.out'
       }, CHAR_START);
 
-      // --- Phase 3: 全文字出揃い後、ディレクショナルライトが静かにフェードイン ---
+      // --- Phase 3: 全文字出揃い後、ライトフェードイン ---
       var LIGHT_FADE_START = CHAR_START + CHAR_TOTAL + 0.3;
       master.to(lightState, {
-        dirIntensity: 0.6,
-        ambient: 0.15,
+        topIntensity: 2.8,
+        rimIntensity: 0.5,
+        fillIntensity: 0.4,
+        frontIntensity: 0.18,
+        topSurfIntensity: 1.8,
+        ambient: 0.12,
         duration: 1.8,
         ease: 'power2.inOut'
       }, LIGHT_FADE_START);
@@ -791,17 +980,17 @@
       // ============================================================
       // Phase 4〜7: シネマティック遷移
       // ============================================================
-      var P5 = LIGHT_FADE_START + 1.8; // ディレクショナル完了後
+      var P5 = LIGHT_FADE_START + 1.8; // ライトフェード完了後
 
       // ライトを安定させる
       master.to(lightState, {
-        ambient: 0.18, dirIntensity: 0.8,
+        ambient: 0.14, topIntensity: 3.2, rimIntensity: 0.6, fillIntensity: 0.45, frontIntensity: 0.2, topSurfIntensity: 2.0,
         duration: 0.6, ease: 'power2.out'
       }, P5);
 
       // --- Step 1: オービット (0.8s) ---
       master.to(camState, {
-        x: 3.5, y: 0.8, z: 8,
+        x: 5.25, y: 1.2, z: 12,
         duration: 0.8, ease: 'power2.inOut'
       }, P5);
       master.to(textState, {
@@ -816,7 +1005,7 @@
         duration: 0.6, ease: 'power2.in'
       }, S2);
       master.to(camState, {
-        x: 1, y: 1.0, z: 12,
+        x: 1.5, y: 1.5, z: 18,
         duration: 0.6, ease: 'power2.inOut'
       }, S2);
 
@@ -825,7 +1014,7 @@
 
       master.to(textState, {
         rotY: Math.PI * 2,
-        rotX: 0.05,
+        rotX: TILT_X * 0.3,
         duration: 1.2,
         ease: 'cubic-bezier(0.16, 1, 0.3, 1)'
       }, S3);
@@ -2163,7 +2352,8 @@
      Init
      ======================================== */
   document.addEventListener('DOMContentLoaded', function () {
-    var isRevisit = sessionStorage.getItem('akashiki-splash') === 'done';
+    var isRevisit = false; // DEV: 毎回オープニング表示（デプロイ時に戻す）
+    // var isRevisit = sessionStorage.getItem('akashiki-splash') === 'done';
     var logoFloat = document.getElementById('logoFloating');
     var opening = document.getElementById('lanternOpening');
 
