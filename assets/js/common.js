@@ -126,9 +126,9 @@
       overlay.style.display = 'none';
     }
 
-    // bfcache復元時: オーバーレイをリセット（戻るボタンで画面が真っ暗になる問題の修正）
-    window.addEventListener('pageshow', function (e) {
-      if (e.persisted) {
+    // 戻るボタン対策: Exitアニメーション状態が残っていたらリセット
+    window.addEventListener('pageshow', function () {
+      if (overlay.classList.contains('is-active')) {
         overlay.classList.remove('is-active');
         overlay.style.clipPath = '';
         overlay.style.display = 'none';
